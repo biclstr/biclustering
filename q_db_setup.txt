@@ -1,0 +1,91 @@
+biclstr / Asdqwe123
+
+create tablespace biclstr
+datafile 'd:\oracle\oradata\orcl\biclstr01.dbf'
+size 400M
+reuse
+autoextend on next 100M maxsize 4G; 
+
+alter profile default limit password_life_time UNLIMITED;
+create user biclstr identified by Asdqwe123 default tablespace biclstr quota unlimited on biclstr;
+
+grant UNLIMITED TABLESPACE, 
+CREATE PROCEDURE, 
+CREATE DATABASE LINK, 
+CREATE VIEW, 
+CREATE SESSION, 
+CREATE MATERIALIZED VIEW, 
+CREATE TRIGGER, 
+CREATE TABLE, 
+ALTER SESSION, 
+CREATE TYPE, 
+CREATE ROLE, 
+CREATE PUBLIC SYNONYM, 
+CREATE SEQUENCE, 
+CREATE SYNONYM to biclstr;
+
+
+--select * from DBA_SYS_PRIVS where grantee='BICLSTR';
+
+create sequence ratings_seq 
+minvalue 1 
+maxvalue 9999999999
+start with 1 
+increment by 1
+cache 20;
+
+CREATE TABLE biclstr.MOVIES 
+(	
+MOVIEID NUMBER(16) NOT NULL ENABLE, 
+TITLE VARCHAR2(200 CHAR), 
+release_date date,
+vid_release_date date,
+imdb_url varchar2(400 char),
+unknown number(1),
+Action number(1), 
+Adventure number(1), 
+Animation number(1),
+Children number(1), 
+Comedy number(1), 
+Crime number(1), 
+Documentary number(1), 
+Drama number(1), 
+Fantasy number(1),
+FilmNoir number(1), 
+Horror number(1), 
+Musical number(1), 
+Mystery number(1), 
+Romance number(1), 
+SciFi number(1),
+Thriller number(1), 
+War number(1), 
+Western number(1),
+CONSTRAINT MOVIES_PK PRIMARY KEY (MOVIEID)
+);
+
+ CREATE TABLE biclstr.GENRES
+   (	"GENREID" NUMBER(4), 
+	"GENRE" VARCHAR2(20 CHAR),
+  constraint genre_pk primary key (genreid)
+   );
+
+CREATE TABLE biclstr.users (
+ userid number(4), 
+ age number(3), 
+ gender varchar2(1 char), 
+ occupation varchar2(20 char),
+ zipcode varchar2(20 char),
+constraint users_pk primary key (userid)
+);
+
+create table biclstr.ratings (
+ratingid number(16),
+userid number(4),
+movieid number(4), 
+rating number(2),
+timestamp number(16),
+constraint rating_pk primary key (ratingid)
+);
+
+alter table ratings add constraint ratings_fk1 foreign key (userid) references users(userid);
+alter table ratings add constraint ratings_fk2 foreign key (movieid) references movies(movieid);

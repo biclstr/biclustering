@@ -1,0 +1,11 @@
+load data
+--infile 'u.genre'
+INTO TABLE genres
+APPEND
+FIELDS TERMINATED BY '|'
+--FIELDS TERMINATED BY WHITESPACE
+( 
+GENRE,
+GENREID
+)
+ 

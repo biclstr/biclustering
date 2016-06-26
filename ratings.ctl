@@ -1,0 +1,15 @@
+load data
+--infile 'u.data'
+INTO TABLE ratings
+APPEND
+FIELDS TERMINATED BY X'09'
+--FIELDS TERMINATED BY WHITESPACE
+TRAILING NULLCOLS
+( 
+USERID,
+MOVIEID, 
+RATING,  
+TIMESTAMP,
+RATINGID "ratings_seq.nextval"
+)
+ 
