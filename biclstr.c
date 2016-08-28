@@ -134,36 +134,31 @@ typedef struct { unsigned short len; unsigned char arr[1]; } varchar;
 /* CUD (Compilation Unit Data) Array */
 static short sqlcud0[] =
 {12,4130,1,0,0,
-5,0,0,1,0,0,32,105,0,0,0,0,0,1,0,
-20,0,0,2,0,0,17,126,0,0,1,1,0,1,0,1,97,0,0,
+5,0,0,1,0,0,32,99,0,0,0,0,0,1,0,
+20,0,0,2,0,0,17,125,0,0,1,1,0,1,0,1,97,0,0,
 39,0,0,2,0,0,20,134,0,0,1,1,0,1,0,3,32,0,0,
-58,0,0,2,0,0,20,145,0,0,1,1,0,1,0,3,32,0,0,
-77,0,0,2,0,0,45,179,0,0,0,0,0,1,0,
-92,0,0,2,0,0,14,197,0,0,1,0,0,1,0,2,32,0,0,
-111,0,0,2,0,0,15,219,0,0,0,0,0,1,0,
-126,0,0,3,0,0,29,221,0,0,0,0,0,1,0,
-141,0,0,0,0,0,27,258,0,0,4,4,0,1,0,1,9,0,0,1,9,0,0,1,10,0,0,1,10,0,0,
-172,0,0,5,60,0,1,262,0,0,0,0,0,1,0,
-187,0,0,6,0,0,30,269,0,0,0,0,0,1,0,
+58,0,0,2,0,0,20,146,0,0,1,1,0,1,0,3,32,0,0,
+77,0,0,2,0,0,45,170,0,0,0,0,0,1,0,
+92,0,0,2,0,0,14,177,0,0,1,0,0,1,0,2,32,0,0,
+111,0,0,2,0,0,15,203,0,0,0,0,0,1,0,
+126,0,0,3,0,0,29,205,0,0,0,0,0,1,0,
+141,0,0,2,0,0,17,222,0,0,1,1,0,1,0,1,97,0,0,
+160,0,0,2,0,0,20,230,0,0,1,1,0,1,0,3,32,0,0,
+179,0,0,2,0,0,20,240,0,0,1,1,0,1,0,3,32,0,0,
+198,0,0,2,0,0,45,264,0,0,0,0,0,1,0,
+213,0,0,2,0,0,14,273,0,0,1,0,0,1,0,2,32,0,0,
+232,0,0,2,0,0,15,301,0,0,0,0,0,1,0,
+247,0,0,4,0,0,29,303,0,0,0,0,0,1,0,
+262,0,0,0,0,0,27,334,0,0,4,4,0,1,0,1,9,0,0,1,9,0,0,1,10,0,0,1,10,0,0,
+293,0,0,6,59,0,1,338,0,0,0,0,0,1,0,
+308,0,0,7,0,0,30,346,0,0,0,0,0,1,0,
 };
 
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "biclstr.h"
 
 #define MAX_VNAME_LEN     30
 #define MAX_INAME_LEN     30
-
-static char *   USERID = NULL;
-static char *   SQLSTMT = NULL;
-static char *   ARRAY_SIZE = "10";
-static char *   DB_NAME = NULL; //"biclstr";
-static char *   DB_STRING = NULL; //"biclstr";
-static char *   DB_USER = NULL; //"biclstr";
-static char *   DB_PASS = NULL; //"Asdqwe123";
 
 #define vstrcpy( a, b ) \
 (strcpy( a.arr, b ), a.len = strlen( a.arr ), a.arr)
@@ -172,6 +167,14 @@ static char *   DB_PASS = NULL; //"Asdqwe123";
     /* This allows compilation on vs 2010 */ 
     #define _W64
 #endif
+
+static char *   USERID = NULL;
+static char *   SQLSTMT = NULL;
+static char *   ARRAY_SIZE = "10";
+static char *   DB_NAME = NULL; //"biclstr";
+static char *   DB_STRING = NULL; //"biclstr";
+static char *   DB_USER = NULL; //"biclstr";
+static char *   DB_PASS = NULL; //"Asdqwe123";
 
 /* EXEC SQL INCLUDE sqlca;
  */ 
@@ -370,13 +373,11 @@ typedef struct SQLDA SQLDA;
 extern SQLDA *sqlald();
 extern void   sqlclu();
 
-
 static void die( char * msg )
 {
     fprintf( stderr, "%s\n", msg );
     exit(1);
 }
-
 
 /*
     this array contains a default mapping
@@ -410,27 +411,27 @@ int    i;
         if ( !strncmp( argv[i], "dbstring=", 9 ) )
               DB_STRING = argv[i]+9;
         else
-        if ( !strncmp( argv[i], "sqlstmt=", 8 ) )
-              SQLSTMT = argv[i]+8;
-        else
         if ( !strncmp( argv[i], "arraysize=", 10 ) )
-              ARRAY_SIZE = argv[i]+10;
+        {
+			ARRAY_SIZE = argv[i]+10;
+			iARRAY_SIZE = atoi(ARRAY_SIZE);
+		}
         else
         {
             fprintf( stderr,
                     "usage: %s %s %s\n",
                      argv[0],
-                    "userid=xxx passwd=yyy dbstring=zzz sqlstmt=query ",
+                    "userid=xxx passwd=yyy dbstring=zzz ",
                     "arraysize=<NN>\n" );
             exit(1);
         }
     }
-    if ( DB_USER == NULL  || SQLSTMT == NULL || DB_PASS == NULL)
+    if ( DB_USER == NULL  || DB_PASS == NULL)
     {
         fprintf( stderr,
                 "usage: %s %s %s\n",
                  argv[0],
-				"userid=xxx passwd=yyy dbstring=zzz sqlstmt=query ",
+				"userid=xxx passwd=yyy dbstring=zzz ",
                 "arraysize=<NN>\n" );
         exit(1);
     }
@@ -465,69 +466,75 @@ static void sqlerror_hard()
     exit(1);
 }
 
-
-
-static SQLDA * process_1(char * sqlstmt, int array_size )
+static void prepare_tpivot(int prep_fpivot)
 {
 SQLDA *    select_dp;
-int     i;
+int		   i;
 int        j;
+int		   k = 0;
+int		   col = 0;
+int		   row = 0;
 int        null_ok;
+int		   last_fetch_count;
+int        row_count = 0;
+short      ind_value;
+char *     char_ptr;
 int        precision;
 int        scale;
 int        size = 10;
 
-    fprintf( stderr, "Unloading '%s'\n", sqlstmt );
-    fprintf( stderr, "Array size = %d\n", array_size );
 
+	SQLSTMT = "select head from (select (select to_char(count(*)) from movies where movieid<10) head, 0 rk from dual union all select to_char(userid) , row_number() over (partition by 'x' order by userid) rk from users) where rownum<30 order by rk";
+    fprintf( stderr, "Unloading header '%s'\n", SQLSTMT );
 
     /* EXEC SQL WHENEVER SQLERROR DO sqlerror_hard(); */ 
 
-       /* EXEC SQL PREPARE S FROM :sqlstmt; */ 
+    /* EXEC SQL PREPARE S FROM :SQLSTMT; */ 
 
 {
-       struct sqlexd sqlstm;
-       sqlstm.sqlvsn = 12;
-       sqlstm.arrsiz = 1;
-       sqlstm.sqladtp = &sqladt;
-       sqlstm.sqltdsp = &sqltds;
-       sqlstm.stmt = "";
-       sqlstm.iters = (unsigned int  )1;
-       sqlstm.offset = (unsigned int  )20;
-       sqlstm.cud = sqlcud0;
-       sqlstm.sqlest = (unsigned char  *)&sqlca;
-       sqlstm.sqlety = (unsigned short)4352;
-       sqlstm.occurs = (unsigned int  )0;
-       sqlstm.sqhstv[0] = (         void  *)sqlstmt;
-       sqlstm.sqhstl[0] = (unsigned int  )0;
-       sqlstm.sqhsts[0] = (         int  )0;
-       sqlstm.sqindv[0] = (         void  *)0;
-       sqlstm.sqinds[0] = (         int  )0;
-       sqlstm.sqharm[0] = (unsigned int  )0;
-       sqlstm.sqadto[0] = (unsigned short )0;
-       sqlstm.sqtdso[0] = (unsigned short )0;
-       sqlstm.sqphsv = sqlstm.sqhstv;
-       sqlstm.sqphsl = sqlstm.sqhstl;
-       sqlstm.sqphss = sqlstm.sqhsts;
-       sqlstm.sqpind = sqlstm.sqindv;
-       sqlstm.sqpins = sqlstm.sqinds;
-       sqlstm.sqparm = sqlstm.sqharm;
-       sqlstm.sqparc = sqlstm.sqharc;
-       sqlstm.sqpadto = sqlstm.sqadto;
-       sqlstm.sqptdso = sqlstm.sqtdso;
-       sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-       if (sqlca.sqlcode < 0) sqlerror_hard();
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 12;
+    sqlstm.arrsiz = 1;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.stmt = "";
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )20;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlstm.sqhstv[0] = (         void  *)SQLSTMT;
+    sqlstm.sqhstl[0] = (unsigned int  )0;
+    sqlstm.sqhsts[0] = (         int  )0;
+    sqlstm.sqindv[0] = (         void  *)0;
+    sqlstm.sqinds[0] = (         int  )0;
+    sqlstm.sqharm[0] = (unsigned int  )0;
+    sqlstm.sqadto[0] = (unsigned short )0;
+    sqlstm.sqtdso[0] = (unsigned short )0;
+    sqlstm.sqphsv = sqlstm.sqhstv;
+    sqlstm.sqphsl = sqlstm.sqhstl;
+    sqlstm.sqphss = sqlstm.sqhsts;
+    sqlstm.sqpind = sqlstm.sqindv;
+    sqlstm.sqpins = sqlstm.sqinds;
+    sqlstm.sqparm = sqlstm.sqharm;
+    sqlstm.sqparc = sqlstm.sqharc;
+    sqlstm.sqpadto = sqlstm.sqadto;
+    sqlstm.sqptdso = sqlstm.sqtdso;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+    if (sqlca.sqlcode < 0) sqlerror_hard();
 }
 
 
-       /* EXEC SQL DECLARE C CURSOR FOR S; */ 
+    /* EXEC SQL DECLARE C CURSOR FOR S; */ 
 
 
-    if ((select_dp = sqlald(size,MAX_VNAME_LEN,MAX_INAME_LEN))
-                   == NULL )
+
+    if ((select_dp = sqlald(size,MAX_VNAME_LEN,MAX_INAME_LEN)) == NULL )
         die( "Cannot allocate  memory for select descriptor." );
 
-    select_dp->N = size;
+	select_dp->N = size;
+	fprintf(stderr, "\n N na poczatku wynosi %d \n", select_dp->F);
     /* EXEC SQL DESCRIBE SELECT LIST FOR S INTO select_dp; */ 
 
 {
@@ -564,16 +571,17 @@ int        size = 10;
 }
 
 
-    if ( !select_dp->F ) return NULL;
+    if (!select_dp->F) 
+		return NULL;
+
+		fprintf(stderr, "\n N potem wynosi %d \n", select_dp->F);
 
     if (select_dp->F < 0)
     {
         size = -select_dp->F;
-        sqlclu( select_dp );
-        if ((select_dp =
-                sqlald (size, MAX_VNAME_LEN, MAX_INAME_LEN))
-                      == NULL )
-        die( "Cannot allocate  memory for descriptor." );
+        sqlclu(select_dp);
+        if ((select_dp = sqlald (size, MAX_VNAME_LEN, MAX_INAME_LEN)) == NULL)
+        die("Cannot allocate  memory for descriptor.");
         /* EXEC SQL DESCRIBE SELECT LIST FOR S INTO select_dp; */ 
 
 {
@@ -611,79 +619,57 @@ int        size = 10;
 
 
     }
-    select_dp->N = select_dp->F;
+    select_dp->N = select_dp->F;	
+	for (i = 0; i < select_dp->N; i++)
+		select_dp->I[i] = (short *) malloc(sizeof(short) * atoi(ARRAY_SIZE) );
 
-    for (i = 0; i < select_dp->N; i++)
-        select_dp->I[i] = (short *) malloc(sizeof(short) *
-                                                array_size );
-
-    for (i = 0; i < select_dp->F; i++)
+	for (i = 0; i < select_dp->F; i++)
     {
         sqlnul (&(select_dp->T[i]),
                 &(select_dp->T[i]), &null_ok);
-        if ( select_dp->T[i] <
-                     sizeof(lengths)/sizeof(lengths[0]) )
-        {
+		 if ( select_dp->T[i] < sizeof(lengths)/sizeof(lengths[0]) )
+         {
             if ( lengths[select_dp->T[i]] )
                  select_dp->L[i]  = lengths[select_dp->T[i]];
             else select_dp->L[i] += 5;
         }
         else select_dp->L[i] += 5;
 
-        select_dp->T[i] = 5;
-        select_dp->V[i] = (char *)malloc( select_dp->L[i] *
-                                               array_size );
+		select_dp->T[i] = 5;
+		select_dp->V[i] = (char *) malloc(select_dp->L[i] * atoi(ARRAY_SIZE));
 
-        for( j = MAX_VNAME_LEN-1;
-             j > 0 && select_dp->S[i][j] == ' ';
-             j--);
-        fprintf (stderr,
-                "%s%.*s", i?"\t":"", j+1, select_dp->S[i]);
-    }
-    fprintf( stderr, "\n" );
+		for( j = MAX_VNAME_LEN-1; j > 0 && select_dp->S[i][j] == ' '; j--);
+   }
 
-
-    /* EXEC SQL OPEN C; */ 
+	/* EXEC SQL OPEN C; */ 
 
 {
-    struct sqlexd sqlstm;
-    sqlstm.sqlvsn = 12;
-    sqlstm.arrsiz = 1;
-    sqlstm.sqladtp = &sqladt;
-    sqlstm.sqltdsp = &sqltds;
-    sqlstm.stmt = "";
-    sqlstm.iters = (unsigned int  )1;
-    sqlstm.offset = (unsigned int  )77;
-    sqlstm.selerr = (unsigned short)1;
-    sqlstm.cud = sqlcud0;
-    sqlstm.sqlest = (unsigned char  *)&sqlca;
-    sqlstm.sqlety = (unsigned short)4352;
-    sqlstm.occurs = (unsigned int  )0;
-    sqlstm.sqcmod = (unsigned int )0;
-    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
-    if (sqlca.sqlcode < 0) sqlerror_hard();
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 12;
+ sqlstm.arrsiz = 1;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.stmt = "";
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )77;
+ sqlstm.selerr = (unsigned short)1;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlstm.sqcmod = (unsigned int )0;
+ sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+ if (sqlca.sqlcode < 0) sqlerror_hard();
 }
 
 
-    return select_dp;
-}
 
+	tpivothead = (char **) malloc(sizeof(char *) * /*(29) */sqlca.sqlerrd[2]);
+	k=0;
 
-static void process_2( SQLDA * select_dp, int array_size )
-{
-int    last_fetch_count;
-int        row_count = 0;
-short    ind_value;
-char    * char_ptr;
-int    i,
-       j;
-
-    for ( last_fetch_count = 0;
-          ;
-          last_fetch_count = sqlca.sqlerrd[2] )
+    for ( last_fetch_count = 0;;last_fetch_count = sqlca.sqlerrd[2] )
     {
-        /* EXEC SQL FOR :array_size FETCH C
-                      USING DESCRIPTOR select_dp; */ 
+        /* EXEC SQL FOR :iARRAY_SIZE FETCH C USING DESCRIPTOR select_dp; */ 
 
 {
         struct sqlexd sqlstm;
@@ -691,7 +677,7 @@ int    i,
         sqlstm.arrsiz = 1;
         sqlstm.sqladtp = &sqladt;
         sqlstm.sqltdsp = &sqltds;
-        sqlstm.iters = (unsigned int  )array_size;
+        sqlstm.iters = (unsigned int  )iARRAY_SIZE;
         sqlstm.offset = (unsigned int  )92;
         sqlstm.selerr = (unsigned short)1;
         sqlstm.cud = sqlcud0;
@@ -722,23 +708,28 @@ int    i,
 }
 
 
+		tpivothead = (char **) realloc(tpivothead, sizeof(char *) * sqlca.sqlerrd[2]);
 
-        for( j=0; j < sqlca.sqlerrd[2]-last_fetch_count; j++ )
+		for( j=0; j < sqlca.sqlerrd[2]-last_fetch_count; j++ )
         {
+			k=j+last_fetch_count;
+			tpivothead[k] = (char *)malloc(sizeof(char) * (lengths[2]+1));
+
             for (i = 0; i < select_dp->F; i++)
             {
                 ind_value = *(select_dp->I[i]+j);
-                char_ptr  = select_dp->V[i] +
-                                  (j*select_dp->L[i]);
-
-                printf( "%s%s", i?"\t":"",				// printf( "%s%s", i?",":"",
-                             ind_value?"":char_ptr );  // ind_value?"(null)":char_ptr );
+                char_ptr  = select_dp->V[i] + (j*select_dp->L[i]);
+				strncpy(tpivothead[k], char_ptr ,strlen(char_ptr));
+				tpivothead[k][strlen(char_ptr)]='\0';
             }
             row_count++;
-            printf( "\n" );
+          //  printf( "\n" );
         }
         if ( sqlca.sqlcode > 0 ) break;
     }
+
+	for (j=0; j<=k; j++)
+		fprintf(stderr, "tpivothead[%d] to '%s'\n",j, tpivothead[j]);
 
     sqlclu(select_dp);
 
@@ -782,6 +773,306 @@ int    i,
 
 
     fprintf( stderr, "%d rows extracted\n", row_count );
+
+
+// ------------------------------ UNLOADING DATA --------------------------- //
+	
+	cols=row_count-1;
+	rows=atoi(tpivothead[0]);
+	row_count = 0;
+
+
+	SQLSTMT = "select m.movieid, u.userid, r.rating from (select * from users where userid<29) /*users*/ u cross join (select * from movies where movieid<10) /*movies*/ m left join ratings r on u.userid=r.userid and m.movieid=r.movieid order by 2, 1"; 
+
+	fprintf( stderr, "Unloading data '%s'\n", SQLSTMT );
+
+	fprintf(stderr, "\n cols %d	rows %d \n", cols, rows);
+	/* EXEC SQL WHENEVER SQLERROR DO sqlerror_hard(); */ 
+
+    /* EXEC SQL PREPARE S FROM :SQLSTMT; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 12;
+    sqlstm.arrsiz = 1;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.stmt = "";
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )141;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlstm.sqhstv[0] = (         void  *)SQLSTMT;
+    sqlstm.sqhstl[0] = (unsigned int  )0;
+    sqlstm.sqhsts[0] = (         int  )0;
+    sqlstm.sqindv[0] = (         void  *)0;
+    sqlstm.sqinds[0] = (         int  )0;
+    sqlstm.sqharm[0] = (unsigned int  )0;
+    sqlstm.sqadto[0] = (unsigned short )0;
+    sqlstm.sqtdso[0] = (unsigned short )0;
+    sqlstm.sqphsv = sqlstm.sqhstv;
+    sqlstm.sqphsl = sqlstm.sqhstl;
+    sqlstm.sqphss = sqlstm.sqhsts;
+    sqlstm.sqpind = sqlstm.sqindv;
+    sqlstm.sqpins = sqlstm.sqinds;
+    sqlstm.sqparm = sqlstm.sqharm;
+    sqlstm.sqparc = sqlstm.sqharc;
+    sqlstm.sqpadto = sqlstm.sqadto;
+    sqlstm.sqptdso = sqlstm.sqtdso;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+    if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
+    /* EXEC SQL DECLARE T CURSOR FOR S; */ 
+
+	
+    if ((select_dp = sqlald(size,MAX_VNAME_LEN,MAX_INAME_LEN)) == NULL )
+        die( "Cannot allocate  memory for select descriptor." );
+
+	select_dp->N = size;
+	fprintf(stderr, "\n N wynosi %d \n", select_dp->N);
+    /* EXEC SQL DESCRIBE SELECT LIST FOR S INTO select_dp; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 12;
+    sqlstm.arrsiz = 1;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )160;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlstm.sqhstv[0] = (         void  *)select_dp;
+    sqlstm.sqhstl[0] = (unsigned int  )0;
+    sqlstm.sqhsts[0] = (         int  )0;
+    sqlstm.sqindv[0] = (         void  *)0;
+    sqlstm.sqinds[0] = (         int  )0;
+    sqlstm.sqharm[0] = (unsigned int  )0;
+    sqlstm.sqadto[0] = (unsigned short )0;
+    sqlstm.sqtdso[0] = (unsigned short )0;
+    sqlstm.sqphsv = sqlstm.sqhstv;
+    sqlstm.sqphsl = sqlstm.sqhstl;
+    sqlstm.sqphss = sqlstm.sqhsts;
+    sqlstm.sqpind = sqlstm.sqindv;
+    sqlstm.sqpins = sqlstm.sqinds;
+    sqlstm.sqparm = sqlstm.sqharm;
+    sqlstm.sqparc = sqlstm.sqharc;
+    sqlstm.sqpadto = sqlstm.sqadto;
+    sqlstm.sqptdso = sqlstm.sqtdso;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+    if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
+    if (!select_dp->F) 
+		return NULL;
+
+    if (select_dp->F < 0)
+    {
+        size = -select_dp->F;
+        sqlclu(select_dp);
+        if ((select_dp = sqlald (size, MAX_VNAME_LEN, MAX_INAME_LEN)) == NULL)
+        die("Cannot allocate  memory for descriptor.");
+        /* EXEC SQL DESCRIBE SELECT LIST FOR S INTO select_dp; */ 
+
+{
+        struct sqlexd sqlstm;
+        sqlstm.sqlvsn = 12;
+        sqlstm.arrsiz = 1;
+        sqlstm.sqladtp = &sqladt;
+        sqlstm.sqltdsp = &sqltds;
+        sqlstm.iters = (unsigned int  )1;
+        sqlstm.offset = (unsigned int  )179;
+        sqlstm.cud = sqlcud0;
+        sqlstm.sqlest = (unsigned char  *)&sqlca;
+        sqlstm.sqlety = (unsigned short)4352;
+        sqlstm.occurs = (unsigned int  )0;
+        sqlstm.sqhstv[0] = (         void  *)select_dp;
+        sqlstm.sqhstl[0] = (unsigned int  )0;
+        sqlstm.sqhsts[0] = (         int  )0;
+        sqlstm.sqindv[0] = (         void  *)0;
+        sqlstm.sqinds[0] = (         int  )0;
+        sqlstm.sqharm[0] = (unsigned int  )0;
+        sqlstm.sqadto[0] = (unsigned short )0;
+        sqlstm.sqtdso[0] = (unsigned short )0;
+        sqlstm.sqphsv = sqlstm.sqhstv;
+        sqlstm.sqphsl = sqlstm.sqhstl;
+        sqlstm.sqphss = sqlstm.sqhsts;
+        sqlstm.sqpind = sqlstm.sqindv;
+        sqlstm.sqpins = sqlstm.sqinds;
+        sqlstm.sqparm = sqlstm.sqharm;
+        sqlstm.sqparc = sqlstm.sqharc;
+        sqlstm.sqpadto = sqlstm.sqadto;
+        sqlstm.sqptdso = sqlstm.sqtdso;
+        sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+        if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
+    }
+    select_dp->N = select_dp->F;	
+	for (i = 0; i < select_dp->N; i++)
+		select_dp->I[i] = (short *) malloc(sizeof(short) * atoi(ARRAY_SIZE) );
+
+	for (i = 0; i < select_dp->F; i++)
+    {
+        sqlnul (&(select_dp->T[i]),
+                &(select_dp->T[i]), &null_ok);
+		 if ( select_dp->T[i] < sizeof(lengths)/sizeof(lengths[0]) )
+         {
+            if ( lengths[select_dp->T[i]] )
+                 select_dp->L[i]  = lengths[select_dp->T[i]];
+            else select_dp->L[i] += 5;
+        }
+        else select_dp->L[i] += 5;
+
+		select_dp->T[i] = 5;
+		select_dp->V[i] = (char *) malloc(select_dp->L[i] * atoi(ARRAY_SIZE));
+
+		for( j = MAX_VNAME_LEN-1; j > 0 && select_dp->S[i][j] == ' '; j--);
+   }
+
+	/* EXEC SQL OPEN T; */ 
+
+{
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 12;
+ sqlstm.arrsiz = 1;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.stmt = "";
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )198;
+ sqlstm.selerr = (unsigned short)1;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlstm.sqcmod = (unsigned int )0;
+ sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+ if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
+
+	tpivot = (int **) malloc(sizeof(int *) * /* sqlca.sqlerrd[2]*/ cols );
+	for (i=0; i<cols; i++)
+		tpivot[i]= (int *) malloc(sizeof(int *) * rows );
+
+	k=0;
+    for ( last_fetch_count = 0;;last_fetch_count = sqlca.sqlerrd[2] )
+    {
+        /* EXEC SQL FOR :iARRAY_SIZE FETCH T USING DESCRIPTOR select_dp; */ 
+
+{
+        struct sqlexd sqlstm;
+        sqlstm.sqlvsn = 12;
+        sqlstm.arrsiz = 1;
+        sqlstm.sqladtp = &sqladt;
+        sqlstm.sqltdsp = &sqltds;
+        sqlstm.iters = (unsigned int  )iARRAY_SIZE;
+        sqlstm.offset = (unsigned int  )213;
+        sqlstm.selerr = (unsigned short)1;
+        sqlstm.cud = sqlcud0;
+        sqlstm.sqlest = (unsigned char  *)&sqlca;
+        sqlstm.sqlety = (unsigned short)4352;
+        sqlstm.occurs = (unsigned int  )0;
+        sqlstm.sqfoff = (           int )0;
+        sqlstm.sqfmod = (unsigned int )2;
+        sqlstm.sqhstv[0] = (         void  *)select_dp;
+        sqlstm.sqhstl[0] = (unsigned int  )0;
+        sqlstm.sqhsts[0] = (         int  )0;
+        sqlstm.sqindv[0] = (         void  *)0;
+        sqlstm.sqinds[0] = (         int  )0;
+        sqlstm.sqharm[0] = (unsigned int  )0;
+        sqlstm.sqadto[0] = (unsigned short )0;
+        sqlstm.sqtdso[0] = (unsigned short )0;
+        sqlstm.sqphsv = sqlstm.sqhstv;
+        sqlstm.sqphsl = sqlstm.sqhstl;
+        sqlstm.sqphss = sqlstm.sqhsts;
+        sqlstm.sqpind = sqlstm.sqindv;
+        sqlstm.sqpins = sqlstm.sqinds;
+        sqlstm.sqparm = sqlstm.sqharm;
+        sqlstm.sqparc = sqlstm.sqharc;
+        sqlstm.sqpadto = sqlstm.sqadto;
+        sqlstm.sqptdso = sqlstm.sqtdso;
+        sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+        if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
+
+		for( j=0; j < sqlca.sqlerrd[2]-last_fetch_count; j++ )
+        {
+			k=j+last_fetch_count;
+
+            for (i = 0; i < select_dp->F; i++)
+            {
+                ind_value = *(select_dp->I[i]+j);
+                char_ptr  = select_dp->V[i] + (j*select_dp->L[i]);
+            }
+            row_count++;
+
+			tpivot[col][row]=atoi(char_ptr);
+			fprintf(stderr, "\n row=%d	col=%d	 tpivot[%d][%d]=%d",row, col, row, col, tpivot[col][row]);
+			
+			row++;
+			if ((row) % rows == 0)
+			{
+				col++;
+				row=0;
+			}
+        }
+        if ( sqlca.sqlcode > 0 ) break;
+    }
+
+    sqlclu(select_dp);
+
+    /* EXEC SQL CLOSE T; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 12;
+    sqlstm.arrsiz = 1;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )232;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+    if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
+
+    /* EXEC SQL COMMIT WORK; */ 
+
+{
+    struct sqlexd sqlstm;
+    sqlstm.sqlvsn = 12;
+    sqlstm.arrsiz = 1;
+    sqlstm.sqladtp = &sqladt;
+    sqlstm.sqltdsp = &sqltds;
+    sqlstm.iters = (unsigned int  )1;
+    sqlstm.offset = (unsigned int  )247;
+    sqlstm.cud = sqlcud0;
+    sqlstm.sqlest = (unsigned char  *)&sqlca;
+    sqlstm.sqlety = (unsigned short)4352;
+    sqlstm.occurs = (unsigned int  )0;
+    sqlcxt((void **)0, &sqlctx, &sqlstm, &sqlfpn);
+    if (sqlca.sqlcode < 0) sqlerror_hard();
+}
+
+
 }
 
 
@@ -793,9 +1084,7 @@ char *    argv[];
 
 /* EXEC SQL BEGIN DECLARE SECTION; */ 
 
-/* VARCHAR  db_name[15]; */ 
-struct { unsigned short len; unsigned char arr[15]; } db_name;
-
+//VARCHAR  db_name[15];
 /* VARCHAR  db_string[15]; */ 
 struct { unsigned short len; unsigned char arr[15]; } db_string;
 
@@ -805,9 +1094,7 @@ struct { unsigned short len; unsigned char arr[15]; } db_user;
 /* VARCHAR  db_pass[15]; */ 
 struct { unsigned short len; unsigned char arr[15]; } db_pass;
 
-/* VARCHAR   oracleid[50]; */ 
-struct { unsigned short len; unsigned char arr[50]; } oracleid;
-
+//VARCHAR   oracleid[50];
 /* EXEC SQL END DECLARE SECTION; */ 
 
 SQLDA    * select_dp;
@@ -815,17 +1102,12 @@ SQLDA    * select_dp;
 
     process_parms( argc, argv );
 
+	fpivot = fopen("fpivot.txt","w+");
+
     /* Connect to ORACLE. */
-    //vstrcpy( oracleid, USERID );
-	//vstrcpy( db_name, DB_NAME);
 	vstrcpy( db_string, DB_STRING);
 	vstrcpy( db_user, DB_USER);
 	vstrcpy( db_pass, DB_PASS);
-
-	printf("\ndb_user %s\n",DB_USER);
-	printf("\ndb_pass %s\n",DB_PASS);
-    printf("\ndb_string %s\n",DB_STRING);
-
 
     /* EXEC SQL WHENEVER SQLERROR DO sqlerror_hard(); */ 
 
@@ -839,7 +1121,7 @@ SQLDA    * select_dp;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )10;
- sqlstm.offset = (unsigned int  )141;
+ sqlstm.offset = (unsigned int  )262;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -879,11 +1161,11 @@ SQLDA    * select_dp;
 }
 
  // USING :db_string; 
-/*    EXEC SQL CONNECT :oracleid AT :db_name USING :db_string; */
-    fprintf(stderr, "\nConnected to ORACLE as user: %s\n\n",DB_USER);
+
+	fprintf(stderr, "\nConnected to ORACLE as user: %s\n\n",DB_USER);
 
     /* EXEC SQL ALTER SESSION
-      SET NLS_DATE_FORMAT = 'DD-MON-YYYY HH24:MI:SS'; */ 
+    SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS'; */ 
 
 {
     struct sqlexd sqlstm;
@@ -891,10 +1173,10 @@ SQLDA    * select_dp;
     sqlstm.arrsiz = 4;
     sqlstm.sqladtp = &sqladt;
     sqlstm.sqltdsp = &sqltds;
-    sqlstm.stmt = "alter SESSION SET NLS_DATE_FORMAT = 'DD-MON-YYYY HH24:MI:\
-SS'";
+    sqlstm.stmt = "alter SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:S\
+S'";
     sqlstm.iters = (unsigned int  )1;
-    sqlstm.offset = (unsigned int  )172;
+    sqlstm.offset = (unsigned int  )293;
     sqlstm.cud = sqlcud0;
     sqlstm.sqlest = (unsigned char  *)&sqlca;
     sqlstm.sqlety = (unsigned short)4352;
@@ -905,8 +1187,9 @@ SS'";
 
 
 
-    select_dp = process_1( SQLSTMT, atoi(ARRAY_SIZE) );
-    process_2( select_dp , atoi(ARRAY_SIZE));
+
+	prepare_tpivot(1);
+
 
     /* Disconnect from ORACLE. */
     /* EXEC SQL COMMIT WORK RELEASE; */ 
@@ -918,7 +1201,7 @@ SS'";
     sqlstm.sqladtp = &sqladt;
     sqlstm.sqltdsp = &sqltds;
     sqlstm.iters = (unsigned int  )1;
-    sqlstm.offset = (unsigned int  )187;
+    sqlstm.offset = (unsigned int  )308;
     sqlstm.cud = sqlcud0;
     sqlstm.sqlest = (unsigned char  *)&sqlca;
     sqlstm.sqlety = (unsigned short)4352;
@@ -927,6 +1210,9 @@ SS'";
     if (sqlca.sqlcode < 0) sqlerror_hard();
 }
 
+
+
+	fclose(fpivot);
 
     exit(0);
 }
